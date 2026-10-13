@@ -5,6 +5,8 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\MusicalsController;
 use App\Http\Controllers\SongsController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
