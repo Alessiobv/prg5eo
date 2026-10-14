@@ -2,15 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\View\View;
+use App\Models\Musical;
+use Illuminate\Http\Request;
 
-class MusicalsController
+class MusicalsController extends Controller
 {
-    public function index(): View
+    public function index()
     {
-        $musicals = DB::table('musicals')->get();
+        $musicals = Musical::latest()->get();
 
-        return view('musicals', ['musicals' => $musicals]);
+        return view('musicals.index', compact('musicals'));
+    }
+
+    public function create()
+    {
+        return view('musicals.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'musical_name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
+        ]);
+
+        Musical::query()->create($validated);
+
+        return redirect()->route('musicals.index');
     }
 }
