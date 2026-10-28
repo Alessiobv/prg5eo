@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('artists', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('musical_id');
+            $table->foreignId('musical_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
         });

@@ -12,10 +12,10 @@ return new class extends Migration {
     {
         Schema::create('songs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('musical_id');
-            $table->foreignId('artist_id');
-            $table->foreignId('album_id');
-            $table->foreignId('user_id');
+            $table->foreignId('musical_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('artist_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('album_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('title');
             $table->integer('duration_sec');
             $table->timestamps();
