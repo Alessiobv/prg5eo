@@ -20,8 +20,9 @@
             <x-navlink link="{{route('contact')}}" :action="request()->routeIs('contact')">Contact</x-navlink>
             <x-navlink link="{{route('musicals.index')}}" :action="request()->routeIs('musicals.*')">Musicals
             </x-navlink>
-            <x-navlink link="{{route('artists.artists')}}" :action="request()->routeIs('artists.*')">Artists</x-navlink>
-            <x-navlink link="{{route('songs.songs')}}" :action="request()->routeIs('songs')">Songs</x-navlink>
+            <x-navlink link="{{route('artists.index')}}" :action="request()->routeIs('artists.*')">Artists</x-navlink>
+            <x-navlink link="{{route('albums.index')}}" :action="request()->routeIs('albums.*')">Albums</x-navlink>
+            <x-navlink link="{{route('songs.index')}}" :action="request()->routeIs('songs')">Songs</x-navlink>
 
             @auth
                 <x-navlink link="{{route('dashboard')}}" :action="request()->routeIs('dashboard')">Dashboard</x-navlink>

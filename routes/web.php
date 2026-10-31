@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AboutUsController;
+use App\Http\Controllers\AlbumsController;
 use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\MusicalsController;
@@ -15,7 +16,9 @@ Route::get('/', function () {
 Route::get('/about', [AboutUsController::class, 'index'])->name('about');
 Route::get('/contact', [ContactUsController::class, 'index'])->name('contact');
 Route::get('/musicals', [MusicalsController::class, 'index'])->name('musicals.index');
-Route::get('/songs', [SongsController::class, 'index'])->name('songs.songs');
+Route::get('/songs', [SongsController::class, 'index'])->name('songs.index');
+Route::get('/artists', [ArtistsController::class, 'index'])->name('artists.index');
+Route::get('/albums', [AlbumsController::class, 'index'])->name('albums.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -37,8 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/songs/create', [SongsController::class, 'create'])->name('songs.create');
     Route::post('/songs', [SongsController::class, 'store'])->name('songs.store');
     Route::get('/songs/{song}/edit', [SongsController::class, 'edit'])->name('songs.edit');
-    Route::put('/songs/{song}', [SongsController::class], 'update')->name('musicals.update');
-    Route::delete('/songs/{song}', [SongsController::class . 'destroy'])->name('songs.delete');
+    Route::put('/songs/{song}', [SongsController::class, 'update'])->name('songs.update');
+    Route::delete('/songs/{song}', [SongsController::class, 'destroy'])->name('songs.delete');
+
+    Route::get('/albums/create', [AlbumsController::class, 'create'])->name('albums.create');
+    Route::post('/albums', [AlbumsController::class, 'store'])->name('albums.store');
+    Route::get('/albums/{album}/edit', [AlbumsController::class, 'edit'])->name('albums.edit');
+    Route::put('/albums/{album}', [AlbumsController::class, 'update'])->name('albums.update');
+    Route::delete('/albums/{album}', [AlbumsController::class, 'destroy'])->name('albums.delete');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
