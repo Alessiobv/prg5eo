@@ -39,8 +39,8 @@ class MusicalsController extends Controller
     public function update(Request $request, Musical $musical)
     {
         $validated = $request->validate([
-            'musical_name' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'musical_name' => 'required|string|max:255',
+            'description' => 'required|string|max:255',
         ]);
         $musical->update($validated);
 

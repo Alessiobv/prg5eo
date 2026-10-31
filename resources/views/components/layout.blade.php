@@ -12,7 +12,7 @@
 <body>
 <header class="header">
     <nav class="nav">
-        <a href="{{ route('home') }}" class="nav-logo">Musicals</a>
+        <a href="{{ route('home') }}" class="nav-logo">MusicAll Charts</a>
 
         <div class="nav-links">
             <x-navlink link="{{route('home')}}" :action="request()->routeIs('home')">Home</x-navlink>
@@ -20,7 +20,8 @@
             <x-navlink link="{{route('contact')}}" :action="request()->routeIs('contact')">Contact</x-navlink>
             <x-navlink link="{{route('musicals.index')}}" :action="request()->routeIs('musicals.*')">Musicals
             </x-navlink>
-            <x-navlink link="{{route('songs')}}" :action="request()->routeIs('songs')">Songs</x-navlink>
+            <x-navlink link="{{route('artists.artists')}}" :action="request()->routeIs('artists.*')">Artists</x-navlink>
+            <x-navlink link="{{route('songs.songs')}}" :action="request()->routeIs('songs')">Songs</x-navlink>
 
             @auth
                 <x-navlink link="{{route('dashboard')}}" :action="request()->routeIs('dashboard')">Dashboard</x-navlink>
