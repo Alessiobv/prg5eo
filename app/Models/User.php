@@ -53,4 +53,9 @@ class User extends Authenticatable
     {
         return $this->likedSongs()->count() >= self::LIKES_NEEDED_TO_FAVORITE;
     }
+
+    public function canManage(Song $song): bool
+    {
+        return $this->is_admin || $song->user_id === $this->id;
+    }
 }

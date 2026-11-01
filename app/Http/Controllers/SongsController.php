@@ -11,15 +11,36 @@ use App\Models\User;
 
 class SongsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $songs = Song::with(['musical', 'artist', 'album'])->get();
-
         $user = auth()->user();
         $likedIds = $user ? $user->likedSongs()->pluck('songs.id') : collect();
         $favoriteIds = $user ? $user->favoriteSongs()->pluck('songs.id') : collect();
+        $artistId = $request->integer('artist') ?: null;
+        $albumId = $request->integer('album') ?: null;
 
-        return view('songs.index', compact('songs', 'likedIds', 'favoriteIds'));
+        $filter = $request->query('filter');
+        if (! $user || ! in_array($filter, ['liked', 'favorited'], true)) {
+            $filter = null;
+        }
+
+        $songs = Song::with(['musical', 'artist', 'album'])
+            ->when($filter === 'liked', fn ($query) => $query->whereIn('songs.id', $likedIds))
+            ->when($filter === 'favorited', fn ($query) => $query->whereIn('songs.id', $favoriteIds))
+            ->when($artistId, fn ($query) => $query->where('songs.artist_id', $artistId))
+            ->when($albumId, fn ($query) => $query->where('songs.album_id', $albumId))
+            ->get();
+
+        return view('songs.index', [
+            'songs' => $songs,
+            'filter' => $filter,
+            'likedIds' => $likedIds,
+            'favoriteIds' => $favoriteIds,
+            'artistId' => $artistId,
+            'albumId' => $albumId,
+            'artists' => Artist::orderBy('name')->get(),
+            'albums' => Album::orderBy('title')->get(),
+        ]);
     }
 
     public function create()
@@ -50,6 +71,8 @@ class SongsController extends Controller
 
     public function edit(Song $song)
     {
+        abort_unless(auth()->user()->canManage($song), 403);
+
         return view('songs.edit', [
             'song' => $song,
             'musicals' => Musical::all(),
@@ -60,6 +83,8 @@ class SongsController extends Controller
 
     public function update(Request $request, Song $song)
     {
+        abort_unless(auth()->user()->canManage($song), 403);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'duration_sec' => 'required|integer',
@@ -74,6 +99,8 @@ class SongsController extends Controller
 
     public function destroy(Song $song)
     {
+        abort_unless(auth()->user()->canManage($song), 403);
+
         $song->delete();
 
         return redirect()->route('songs.index')->with('success', 'Song Deleted');
