@@ -21,7 +21,12 @@ Route::get('/artists', [ArtistsController::class, 'index'])->name('artists.index
 Route::get('/albums', [AlbumsController::class, 'index'])->name('albums.index');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $songs = auth()->user()
+        ->songs()
+        ->with(['musical', 'artist', 'album'])
+        ->latest()
+        ->get();
+    return view('dashboard', compact('songs'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -42,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/songs/{song}/edit', [SongsController::class, 'edit'])->name('songs.edit');
     Route::put('/songs/{song}', [SongsController::class, 'update'])->name('songs.update');
     Route::delete('/songs/{song}', [SongsController::class, 'destroy'])->name('songs.delete');
+    Route::post('/songs/{song}/like', [Songscontroller::class, 'like'])->name('songs.like');
+    Route::post('/songs/{song}/favorite', [Songscontroller::class, 'favorite'])->name('songs.favorite');
 
     Route::get('/albums/create', [AlbumsController::class, 'create'])->name('albums.create');
     Route::post('/albums', [AlbumsController::class, 'store'])->name('albums.store');

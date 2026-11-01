@@ -7,14 +7,19 @@ use App\Models\Song;
 use App\Models\Artist;
 use App\Models\Musical;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class SongsController extends Controller
 {
     public function index()
     {
-        $songs = Song::all();
+        $songs = Song::with(['musical', 'artist', 'album'])->get();
 
-        return view('songs.index', compact('songs'));
+        $user = auth()->user();
+        $likedIds = $user ? $user->likedSongs()->pluck('songs.id') : collect();
+        $favoriteIds = $user ? $user->favoriteSongs()->pluck('songs.id') : collect();
+
+        return view('songs.index', compact('songs', 'likedIds', 'favoriteIds'));
     }
 
     public function create()
@@ -32,9 +37,11 @@ class SongsController extends Controller
             'title' => 'required|string|max:255',
             'duration_sec' => 'required|integer',
             'musical_id' => 'required|integer|exists:musicals,id',
-            'album_id' => 'required|integer|exists:albums,id',
+            'album_id' => 'nullable|integer|exists:albums,id',
             'artist_id' => 'required|integer|exists:artists,id',
         ]);
+
+        $validated['user_id'] = $request->user()->id;
 
         Song::query()->create($validated);
 
@@ -70,5 +77,32 @@ class SongsController extends Controller
         $song->delete();
 
         return redirect()->route('songs.index')->with('success', 'Song Deleted');
+    }
+
+    public function like(Song $song, Request $request)
+    {
+        $request->user()->likedSongs()->toggle($song->id);
+
+        return back();
+    }
+
+    public function favorite(Song $song, Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->favoriteSongs()->where('songs.id', $song->id)->exists()) {
+            $user->favoriteSongs()->detach($song->id);
+            return back();
+        }
+
+        if(! $user->canFavorite()){
+            return back()->withErrors([
+                'favorite' => 'Like ' . User::LIKES_NEEDED_TO_FAVORITE . ' songs before you can favorite songs.',
+            ]);
+        }
+
+        $user->favoriteSongs()->attach($song->id);
+
+        return back();
     }
 }
