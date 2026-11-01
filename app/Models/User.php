@@ -19,7 +19,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const LIKES_NEEDED_TO_FAVORITE = 5;
+    public const int LIKES_NEEDED_TO_FAVORITE = 5;
 
     /**
      * Get the attributes that should be cast.

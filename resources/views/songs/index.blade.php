@@ -20,6 +20,9 @@
             <input type="hidden" name="filter" value="{{ $filter }}">
         @endif
 
+        <label for="search" class="text-sm font-medium text-amber-300">Search</label>
+            <input type="search" id="search" name="search" value="{{ $search }}" placeholder="Title, Artist, Musical or Album" class="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-100 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500">
+
         <label for="artist" class="text-sm font-medium text-amber-300">Artist</label>
         <select id="artist" name="artist" class="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-100 transition focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500">
             <option value="">All Artists</option>

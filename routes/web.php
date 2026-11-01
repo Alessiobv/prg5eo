@@ -6,7 +6,7 @@ use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\MusicalsController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Songscontroller;
+use App\Http\Controllers\SongsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +30,20 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/songs/create', [SongsController::class, 'create'])->name('songs.create');
+    Route::post('/songs', [SongsController::class, 'store'])->name('songs.store');
+    Route::get('/songs/{song}/edit', [SongsController::class, 'edit'])->name('songs.edit');
+    Route::put('/songs/{song}', [SongsController::class, 'update'])->name('songs.update');
+    Route::delete('/songs/{song}', [SongsController::class, 'destroy'])->name('songs.delete');
+    Route::post('/songs/{song}/like', [SongsController::class, 'like'])->name('songs.like');
+    Route::post('/songs/{song}/favorite', [SongsController::class, 'favorite'])->name('songs.favorite');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'can:admin'])->group(function () {
     Route::get('/musicals/create', [MusicalsController::class, 'create'])->name('musicals.create');
     Route::post('/musicals', [MusicalsController::class, 'store'])->name('musicals.store');
     Route::get('/musicals/{musical}/edit', [MusicalsController::class, 'edit'])->name('musicals.edit');
@@ -42,23 +56,11 @@ Route::middleware('auth')->group(function () {
     Route::put('/artists/{artist}', [ArtistsController::class, 'update'])->name('artists.update');
     Route::delete('/artists/{artist}', [ArtistsController::class, 'destroy'])->name('artists.delete');
 
-    Route::get('/songs/create', [SongsController::class, 'create'])->name('songs.create');
-    Route::post('/songs', [SongsController::class, 'store'])->name('songs.store');
-    Route::get('/songs/{song}/edit', [SongsController::class, 'edit'])->name('songs.edit');
-    Route::put('/songs/{song}', [SongsController::class, 'update'])->name('songs.update');
-    Route::delete('/songs/{song}', [SongsController::class, 'destroy'])->name('songs.delete');
-    Route::post('/songs/{song}/like', [Songscontroller::class, 'like'])->name('songs.like');
-    Route::post('/songs/{song}/favorite', [Songscontroller::class, 'favorite'])->name('songs.favorite');
-
     Route::get('/albums/create', [AlbumsController::class, 'create'])->name('albums.create');
     Route::post('/albums', [AlbumsController::class, 'store'])->name('albums.store');
     Route::get('/albums/{album}/edit', [AlbumsController::class, 'edit'])->name('albums.edit');
     Route::put('/albums/{album}', [AlbumsController::class, 'update'])->name('albums.update');
     Route::delete('/albums/{album}', [AlbumsController::class, 'destroy'])->name('albums.delete');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

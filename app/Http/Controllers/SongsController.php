@@ -24,7 +24,17 @@ class SongsController extends Controller
             $filter = null;
         }
 
+        $search = trim((string) $request->query('search'));
+
         $songs = Song::with(['musical', 'artist', 'album'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('songs.title', 'like', "%{$search}%")
+                        ->orWhereHas('artist', fn ($a) => $a->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('musical', fn ($m) => $m->where('musical_name', 'like', "%{$search}%"))
+                        ->orWhereHas('album', fn ($al) => $al->where('title', 'like', "%{$search}%"));
+                });
+            })
             ->when($filter === 'liked', fn ($query) => $query->whereIn('songs.id', $likedIds))
             ->when($filter === 'favorited', fn ($query) => $query->whereIn('songs.id', $favoriteIds))
             ->when($artistId, fn ($query) => $query->where('songs.artist_id', $artistId))
@@ -33,6 +43,7 @@ class SongsController extends Controller
 
         return view('songs.index', [
             'songs' => $songs,
+            'search' => $search,
             'filter' => $filter,
             'likedIds' => $likedIds,
             'favoriteIds' => $favoriteIds,
@@ -56,7 +67,7 @@ class SongsController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'duration_sec' => 'required|integer',
+            'duration_sec' => 'required|integer|min:1',
             'musical_id' => 'required|integer|exists:musicals,id',
             'album_id' => 'nullable|integer|exists:albums,id',
             'artist_id' => 'required|integer|exists:artists,id',
@@ -87,7 +98,7 @@ class SongsController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'duration_sec' => 'required|integer',
+            'duration_sec' => 'required|integer|min:1',
             'musical_id' => 'required|integer|exists:musicals,id',
             'album_id' => 'required|integer|exists:albums,id',
             'artist_id' => 'required|integer|exists:artists,id',
